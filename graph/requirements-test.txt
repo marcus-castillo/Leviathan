@@ -1,0 +1,6 @@
+# Minimal deps to run the graph analytics tests (tests/test_analysis.py).
+# Analytics run on NetworkX/scikit-learn — no live Neo4j needed.
+pytest==8.3.3
+networkx==3.3
+scikit-learn==1.5.2
+numpy==1.26.4

@@ -1,0 +1,28 @@
+[project]
+name = "levcorpus"
+version = "0.1.0"
+description = "Standardized, versioned dataset builder for legal-NLP and judicial-disparity research."
+requires-python = ">=3.11"
+dependencies = [
+  "pandas>=2.2",
+  "pyarrow>=17",
+  "sqlalchemy>=2.0",
+  "psycopg[binary]>=3.2",
+  "pgvector>=0.3",
+  "pydantic>=2.9",
+  "httpx>=0.27",
+]
+
+[project.scripts]
+levcorpus = "levcorpus.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["levcorpus*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]

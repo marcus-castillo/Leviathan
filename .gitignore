@@ -1,0 +1,35 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Models / artifacts
+backend/artifacts/
+*.pt
+*.bin
+*.faiss
+
+# Generated dataset releases (track with DVC/Git-LFS instead if desired)
+corpus/dataset/versions/
+corpus/dataset/registry.json
+corpus/dataset/CHANGELOG.md
+
+# Env / secrets
+.env
+*.local
+
+# Node / Next
+node_modules/
+**/.next/
+**/out/
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

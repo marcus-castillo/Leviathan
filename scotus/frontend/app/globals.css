@@ -1,0 +1,41 @@
+:root {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f5f5f5;
+  --border: #cccccc;
+  --text: #000000;
+  --muted: #555555;
+  --accent: #000000;
+  --warn: #000000;
+  --warn-bg: #f5f5f5;
+  --maj: #000000;
+  --dis: #777777;
+}
+* { box-sizing: border-box; }
+html, body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: "Times New Roman", Times, serif; font-size: 16px; line-height: 1.5;
+}
+a { color: var(--text); text-decoration: underline; }
+a:hover { color: var(--muted); }
+h1 { font-size: 28px; font-weight: 700; margin: 0 0 16px; }
+h3 { font-weight: 700; }
+.nav { display: flex; gap: 22px; align-items: baseline; padding: 14px 24px;
+  border-bottom: 1px solid var(--border); background: var(--bg); }
+.nav .brand { font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+.container { max-width: 1100px; margin: 0 auto; padding: 28px 24px; }
+.card { background: var(--panel); border: 1px solid var(--border); padding: 18px; margin-bottom: 16px; }
+.muted { color: var(--muted); } .small { font-size: 13px; }
+.banner { background: var(--warn-bg); border: 1px solid var(--border); border-left: 4px solid var(--text);
+  color: var(--text); padding: 12px 14px; margin-bottom: 18px; font-size: 14px; line-height: 1.55; }
+.badge { display: inline-block; font-size: 11px; padding: 2px 8px; border: 1px solid var(--border);
+  color: var(--muted); margin: 2px 4px 2px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.chip { display: inline-block; font-size: 12px; padding: 3px 9px; border: 1px solid var(--border);
+  margin: 3px; }
+input, select, button { background: var(--bg); color: var(--text); border: 1px solid var(--border);
+  padding: 8px 10px; font-size: 14px; font-family: inherit; border-radius: 0; }
+button { cursor: pointer; }
+table { width: 100%; border-collapse: collapse; }
+th, td { padding: 6px 8px; border: 1px solid var(--border); font-size: 12px; text-align: center; }
+th:first-child, td:first-child { text-align: left; color: var(--muted); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }

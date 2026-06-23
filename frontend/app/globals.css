@@ -1,0 +1,86 @@
+:root {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --panel-2: #f5f5f5;
+  --border: #cccccc;
+  --text: #000000;
+  --muted: #555555;
+  --accent: #000000;
+  --warn: #000000;
+  --warn-bg: #f5f5f5;
+  --danger: #000000;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Times New Roman", Times, serif;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+a { color: var(--text); text-decoration: underline; }
+a:hover { color: var(--muted); }
+
+h1 { font-size: 28px; font-weight: 700; margin: 0 0 16px; }
+h3 { font-weight: 700; }
+
+.container { max-width: 1000px; margin: 0 auto; padding: 28px 24px; }
+
+.nav {
+  display: flex; gap: 22px; align-items: baseline;
+  padding: 14px 24px; border-bottom: 1px solid var(--border);
+  background: var(--bg);
+}
+.nav .brand { font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
+
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+
+.banner {
+  background: var(--warn-bg);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--text);
+  color: var(--text);
+  padding: 12px 14px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.badge {
+  display: inline-block; font-size: 11px; padding: 2px 8px;
+  border: 1px solid var(--border); color: var(--muted);
+  text-transform: uppercase; letter-spacing: 0.5px;
+}
+.badge.warn { border-color: var(--text); color: var(--text); }
+.badge.low { border-color: var(--text); color: var(--text); font-weight: 700; }
+
+input, textarea, select, button {
+  background: var(--bg); color: var(--text);
+  border: 1px solid var(--border); padding: 8px 10px; font-size: 14px;
+  font-family: inherit; border-radius: 0;
+}
+button { cursor: pointer; }
+button.primary { background: var(--text); color: var(--bg); border-color: var(--text); font-weight: 700; }
+button:disabled { color: var(--muted); border-color: var(--border); cursor: not-allowed; }
+
+table { width: 100%; border-collapse: collapse; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--border); font-size: 13px; }
+th { color: var(--text); font-weight: 700; }
+
+.conf-bar { height: 6px; background: var(--panel-2); border: 1px solid var(--border); overflow: hidden; }
+.conf-bar > div { height: 100%; background: var(--text); }

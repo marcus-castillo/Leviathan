@@ -1,0 +1,6 @@
+# Minimal deps to run the levcorpus unit tests (tests/test_schema_export.py).
+# No backend / Postgres needed; the parquet test self-skips if pyarrow is absent.
+pytest==8.3.3
+pydantic==2.9.2
+pandas==2.2.3
+pyarrow==17.0.0

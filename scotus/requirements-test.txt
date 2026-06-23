@@ -1,0 +1,5 @@
+# Minimal deps for scotusapp unit tests (segmentation + lexical log-odds + topics).
+# No backend / Postgres / sentence-transformers needed.
+pytest==8.3.3
+numpy==1.26.4
+scikit-learn==1.5.2

@@ -1,0 +1,56 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://leviathan.example/schemas/dataset_v1.schema.json",
+  "title": "Leviathan Corpus CaseRecord",
+  "description": "Standardized legal-NLP record. Annotations are weak auto-generated proxies, not ground truth; decision_direction is a structural prevailing-party label, NOT an ideological coding.",
+  "type": "object",
+  "required": ["record_id", "source", "case_name", "text_sha256", "schema_version"],
+  "properties": {
+    "record_id": {"type": "string", "description": "16-hex stable id over source+external_id+text hash"},
+    "source": {"type": "string", "examples": ["courtlistener", "public-domain"]},
+    "source_url": {"type": ["string", "null"]},
+    "external_id": {"type": ["string", "null"]},
+    "license": {"type": "string"},
+    "case_name": {"type": "string"},
+    "court": {"type": ["string", "null"]},
+    "jurisdiction": {"type": ["string", "null"]},
+    "judge": {"type": ["string", "null"]},
+    "judge_id": {"type": ["string", "null"], "description": "stable hash of normalized judge name"},
+    "decided": {"type": ["string", "null"], "format": "date"},
+    "parties": {
+      "type": "object",
+      "properties": {
+        "plaintiff_or_appellant": {"type": ["string", "null"]},
+        "defendant_or_appellee": {"type": ["string", "null"]},
+        "all_parties": {"type": "array", "items": {"type": "string"}},
+        "party_roles": {"type": "object", "additionalProperties": {"type": "string", "enum": ["government", "private"]}}
+      }
+    },
+    "citations": {"type": "array", "items": {"type": "string"}},
+    "facts_summary": {"type": ["string", "null"]},
+    "legal_issue": {"type": ["string", "null"]},
+    "ruling": {"type": ["string", "null"]},
+    "text_sha256": {"type": "string"},
+    "annotations": {
+      "type": "object",
+      "properties": {
+        "outcome": {"type": "string", "enum": ["plaintiff", "defendant", "mixed", "unknown"]},
+        "outcome_confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "case_type": {"type": "string"},
+        "topic": {"type": "array", "items": {"type": "string"}},
+        "sentiment_proxy": {"type": "number", "description": "WEAK PROXY: lexical tone only"},
+        "sentiment_proxy_note": {"type": "string"},
+        "decision_direction": {
+          "type": "string",
+          "enum": ["plaintiff_appellant_favored", "defendant_appellee_favored", "mixed", "unknown"],
+          "description": "Structural prevailing-party label. NOT ideological."
+        }
+      }
+    },
+    "embedding": {"type": ["array", "null"], "items": {"type": "number"}, "description": "case-similarity vector (384-d MiniLM)"},
+    "embedding_model": {"type": ["string", "null"]},
+    "schema_version": {"type": "string"},
+    "dataset_version": {"type": ["string", "null"]},
+    "ingested_at": {"type": "string", "format": "date-time"}
+  }
+}

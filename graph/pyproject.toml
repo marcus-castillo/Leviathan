@@ -1,0 +1,13 @@
+[project]
+name = "leviathan-graph"
+version = "0.1.0"
+description = "Citation-graph construction and influence analysis for judicial opinions."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

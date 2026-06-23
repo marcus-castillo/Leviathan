@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Leviathan — Judicial Opinion Analysis Suite</title>
+  <style>
+    :root {
+      --bg:#ffffff; --panel:#ffffff; --panel-2:#f5f5f5; --border:#cccccc;
+      --text:#000000; --muted:#555555;
+    }
+    * { box-sizing:border-box; }
+    body { margin:0; background:var(--bg); color:var(--text);
+      font-family:"Times New Roman", Times, serif; font-size:16px; line-height:1.5; }
+    .wrap { max-width:1080px; margin:0 auto; padding:40px 24px 64px; }
+    header { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap;
+      border-bottom:1px solid var(--border); padding-bottom:16px; }
+    h1 { font-size:30px; margin:0; letter-spacing:1px; text-transform:uppercase; }
+    .tag { color:var(--muted); font-size:14px; }
+    .banner { background:var(--panel-2); border:1px solid var(--border); border-left:4px solid var(--text);
+      color:var(--text); padding:14px 16px; margin:22px 0 28px; font-size:14px; line-height:1.6; }
+    .grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; }
+    a.card { display:block; text-decoration:none; color:inherit; background:var(--panel);
+      border:1px solid var(--border); padding:20px; }
+    a.card:hover { border-color:var(--text); }
+    .card h3 { margin:0 0 6px; font-size:18px; }
+    .card p { margin:0; color:var(--muted); font-size:14px; line-height:1.55; }
+    .pill { display:inline-block; font-size:11px; color:var(--muted); border:1px solid var(--border);
+      padding:2px 9px; margin-top:12px; text-transform:uppercase; letter-spacing:0.5px; }
+    .section-title { margin:34px 0 12px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:var(--muted); }
+    .links { display:flex; gap:18px; flex-wrap:wrap; }
+    .links a { color:var(--text); font-size:14px; text-decoration:underline; }
+    .links a:hover { color:var(--muted); }
+    code { background:var(--panel-2); border:1px solid var(--border); padding:1px 5px; font-size:13px;
+      font-family:"Courier New", monospace; }
+    footer { margin-top:40px; color:var(--muted); font-size:13px; line-height:1.6;
+      border-top:1px solid var(--border); padding-top:16px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <h1>Leviathan</h1>
+      <span class="tag">Judicial opinion analysis suite — bias metrics, dataset builder, citation graph</span>
+    </header>
+
+    <div class="banner">
+      <strong>Note — interpretation guardrail.</strong>
+      Leviathan reports <strong>statistical patterns</strong> in text, outcomes, and citations only. It does
+      <strong>not</strong> measure judicial intent, ideology, or bias, and cannot establish causation. Every
+      figure ships with confidence, sample-size, and limitations caveats. Treat all results as hypotheses for
+      qualified human review — never as conclusions about any person.
+    </div>
+
+    <div class="grid">
+      <a class="card" href="http://localhost:3000">
+        <h3>Bias Metrics Dashboard</h3>
+        <p>Judge profiles, outcome/tone/topic/citation disparities, similar-case explorer, and temporal trends.
+           Each signal carries an explainability + caveats panel.</p>
+        <span class="pill">:3000 · Next.js</span>
+      </a>
+
+      <a class="card" href="http://localhost:3001">
+        <h3>Citation Graph Explorer</h3>
+        <p>Zoomable Neo4j citation network (Cytoscape.js), judge influence paths, Louvain communities,
+           statistical grouping, and reasoning-evolution timelines.</p>
+        <span class="pill">:3001 · Next.js + Cytoscape</span>
+      </a>
+
+      <a class="card" href="http://localhost:3002">
+        <h3>SCOTUS Opinion NLP</h3>
+        <p>Supreme Court opinion segmentation, majority-vs-dissent lexical divergence, topic modeling,
+           per-justice style similarity map, and theme evolution across terms.</p>
+        <span class="pill">:3002 · Next.js</span>
+      </a>
+    </div>
+
+    <div class="section-title">APIs &amp; tools</div>
+    <div class="links">
+      <a href="http://localhost:8000/docs">Bias API docs (:8000)</a>
+      <a href="http://localhost:8001/docs">Graph API docs (:8001)</a>
+      <a href="http://localhost:8002/docs">SCOTUS API docs (:8002)</a>
+      <a href="http://localhost:7474">Neo4j Browser (:7474)</a>
+      <a href="https://github.com/">Repo</a>
+    </div>
+
+    <div class="section-title">Dataset builder (CLI)</div>
+    <p class="tag">
+      The <code>levcorpus</code> tool exports a standardized, versioned dataset (JSONL/CSV/Parquet):<br />
+      <code>docker compose --profile tools run --rm corpus ingest|preprocess|embed|export</code>
+    </p>
+
+    <footer>
+      Research preview. Not legal advice. See <code>ETHICS.md</code>. Links target the default local
+      <code>docker compose</code> ports; adjust if you remapped them.
+    </footer>
+  </div>
+</body>
+</html>

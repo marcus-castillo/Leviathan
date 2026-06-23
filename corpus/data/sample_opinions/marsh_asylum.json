@@ -1,0 +1,12 @@
+{
+  "external_id": "pd-okafor-2022",
+  "case_name": "Okafor v. United States",
+  "judge_name": "Hon. Eleanor Marsh",
+  "court": "ca9",
+  "jurisdiction": "federal",
+  "decided": "2022-05-19",
+  "case_type": "immigration",
+  "citations": ["8 U.S.C. § 1158", "INS v. Cardoza-Fonseca"],
+  "source_url": "https://example.gov/opinions/okafor",
+  "license": "Public domain (U.S. government work)"
+}

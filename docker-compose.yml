@@ -1,0 +1,137 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-leviathan}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-leviathan}
+      POSTGRES_DB: ${POSTGRES_DB:-leviathan}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-leviathan}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  backend:
+    build: ./backend
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-leviathan}:${POSTGRES_PASSWORD:-leviathan}@db:5432/${POSTGRES_DB:-leviathan}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - model_cache:/root/.cache
+
+  frontend:
+    build: ./frontend
+    environment:
+      NEXT_PUBLIC_API_BASE: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+
+  # Offline dataset-builder CLI. Not a long-running service — run on demand:
+  #   docker compose --profile tools run --rm corpus ingest --source public-domain --path data/sample_opinions
+  #   docker compose --profile tools run --rm corpus preprocess
+  #   docker compose --profile tools run --rm corpus embed
+  #   docker compose --profile tools run --rm corpus export --bump minor
+  corpus:
+    profiles: ["tools"]
+    build:
+      context: .
+      dockerfile: corpus/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-leviathan}:${POSTGRES_PASSWORD:-leviathan}@db:5432/${POSTGRES_DB:-leviathan}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./corpus:/work/corpus
+      - model_cache:/root/.cache
+
+  # --- Graph layer (Neo4j citation graph + influence analysis) ---
+  neo4j:
+    image: neo4j:5-community
+    environment:
+      NEO4J_AUTH: neo4j/leviathan_graph
+      NEO4J_PLUGINS: '["apoc"]'
+    ports:
+      - "7474:7474"   # browser
+      - "7687:7687"   # bolt
+    volumes:
+      - neo4jdata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:7474 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+
+  graph-api:
+    build: ./graph
+    environment:
+      NEO4J_URI: bolt://neo4j:7687
+      NEO4J_USER: neo4j
+      NEO4J_PASSWORD: leviathan_graph
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-leviathan}:${POSTGRES_PASSWORD:-leviathan}@db:5432/${POSTGRES_DB:-leviathan}
+    ports:
+      - "8001:8001"
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    volumes:
+      - ./graph:/app
+
+  graph-frontend:
+    build: ./graph/frontend
+    environment:
+      NEXT_PUBLIC_GRAPH_API_BASE: http://localhost:8001
+    ports:
+      - "3001:3001"
+    depends_on:
+      - graph-api
+
+  # --- SCOTUS research platform (shares Postgres; reuses backend encoder) ---
+  scotus-api:
+    build:
+      context: .
+      dockerfile: scotus/Dockerfile
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql+psycopg://${POSTGRES_USER:-leviathan}:${POSTGRES_PASSWORD:-leviathan}@db:5432/${POSTGRES_DB:-leviathan}
+    ports:
+      - "8002:8002"
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./scotus:/app/scotus
+      - model_cache:/root/.cache
+
+  scotus-frontend:
+    build: ./scotus/frontend
+    environment:
+      NEXT_PUBLIC_SCOTUS_API_BASE: http://localhost:8002
+    ports:
+      - "3002:3002"
+    depends_on:
+      - scotus-api
+
+  # --- Unified landing page ---
+  landing:
+    build: ./landing
+    ports:
+      - "8080:80"
+
+volumes:
+  pgdata:
+  model_cache:
+  neo4jdata:

@@ -1,0 +1,12 @@
+{
+  "external_id": "pd-brennan-2019",
+  "case_name": "United States v. Brennan",
+  "judge_name": "Judge David Okonkwo",
+  "court": "dcd",
+  "jurisdiction": "federal",
+  "decided": "2019-05-21",
+  "case_type": "criminal-procedure",
+  "citations": ["18 U.S.C. § 924", "Terry v. Ohio"],
+  "source_url": "https://example.gov/opinions/brennan",
+  "license": "Public domain (U.S. government work)"
+}

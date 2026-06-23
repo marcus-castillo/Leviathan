@@ -1,0 +1,13 @@
+[project]
+name = "leviathan-backend"
+version = "0.1.0"
+description = "Research-grade NLP for statistical disparities in judicial opinions."
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
