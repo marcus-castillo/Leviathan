@@ -10,19 +10,24 @@ A manuscript scaffold for a **software/resource paper** validated against the Su
 - `Makefile` — `make` builds `main.pdf` (needs a TeX distribution).
 
 ## Status
-Prose that does not depend on results (architecture, methods, related work, ethics, reproducibility)
-is written. **All empirical numbers are placeholders** until you run the pipeline on a real corpus +
-SCDB and fill them via `REPRODUCE.md`. Do not submit with any `[FILL]` marker remaining.
+`main.tex` is formatted for **SoftwareX** (Elsevier `elsarticle` class, the required *Code metadata*
+table, and the SoftwareX section order: Motivation and significance → Software description →
+Illustrative examples → Impact → Conclusions). Prose that does not depend on results is written.
+**All empirical numbers are placeholders** (`[FILL]`, red) until you run the pipeline on a real corpus
++ SCDB and fill them via `REPRODUCE.md`. Do not submit with any `[FILL]` marker remaining.
 
-## Target venues (software/resource)
-- **SoftwareX** (Elsevier) — software metapaper; fits the "describe + validate + impact" structure here.
-- **Journal of Open Source Software (JOSS)** — note: JOSS papers are very short and do *not* include a
-  validation/results section; the validation here would live in the repo/docs, and `main.tex` would be
-  trimmed to a Summary + Statement of Need. JOSS also requires substantial documentation and tests
-  (already present).
-- An **arXiv preprint** first is advisable regardless.
+## Build requirements
+Needs the `elsarticle` class (ships with TeX Live's `texlive-publishers`) and `elsarticle-num.bst`.
+`make` runs pdflatex → bibtex → pdflatex×2.
+
+## SoftwareX submission checklist
+- [ ] Set author affiliation (frontmatter `\address`) and Acknowledgements (incl. AI-assistance disclosure).
+- [ ] Archive a tagged release to **Zenodo** and put the DOI in Code-metadata C2.
+- [ ] (Recommended) Create a **Code Ocean** reproducible capsule for C3.
+- [ ] License: repository ships **MIT** (`/LICENSE`); matches metadata C4. Swap to Apache-2.0 if you want explicit patent terms.
+- [ ] Fill every `[FILL]` from a real run; verify with `! grep -n "FILL:" paper/main.tex`.
+- [ ] Consider an **arXiv** preprint first.
 
 ## Authorship & integrity
-- Set the author list/affiliations before submission.
-- Disclose tooling/AI assistance per the target venue's policy.
-- The repository's CI, tests, and dataset versioning are part of the artifact — link the exact commit.
+- The repository's CI, tests, and dataset versioning are part of the artifact — link the exact commit / Zenodo DOI.
+- Disclose AI-assisted development per SoftwareX policy.

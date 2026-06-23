@@ -1,136 +1,152 @@
-\documentclass[11pt]{article}
+% SoftwareX "Original Software Publication" metapaper.
+% Uses the Elsevier elsarticle class (ships with TeX Live's elsarticle package).
+\documentclass[preprint,12pt]{elsarticle}
 
-\usepackage[utf8]{inputenc}
-\usepackage[margin=1in]{geometry}
-\usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
 \usepackage{hyperref}
 \usepackage{url}
-\usepackage{xcolor}
-\usepackage{listings}
 
-% Placeholder marker: every number that must come from a real run is wrapped in \FILL,
-% so it is impossible to mistake an unfilled template for a reported result.
+% Placeholder marker: every number/fact that must come from a real run or a final decision is wrapped
+% in \FILL and rendered in red, so an unfilled template can never be mistaken for a reported result.
 \newcommand{\FILL}[1]{{\color{red}\textbf{[FILL: #1]}}}
 
-\title{Leviathan: An Open, Reproducible Pipeline for\\
-Statistical Text Analysis of Judicial Opinions}
-\author{Marcus Castillo \\ \texttt{marcus.f.castillo@gmail.com}}
-\date{\today}
+\journal{SoftwareX}
 
 \begin{document}
-\maketitle
+
+\begin{frontmatter}
+
+\title{Leviathan: An Open, Reproducible Pipeline for Statistical Text Analysis of Judicial Opinions}
+
+\author[ind]{Marcus Castillo}
+\ead{marcus.f.castillo@gmail.com}
+\address[ind]{\FILL{affiliation / ``Independent Researcher''}}
 
 \begin{abstract}
 We present \textbf{Leviathan}, an open-source, containerized pipeline for the statistical analysis of
-judicial opinions. Leviathan ingests court opinions and their metadata, segments Supreme Court
-opinions into majority, concurrence, and dissent components, and computes a battery of descriptive,
-lexical, embedding-, and graph-based measures: outcome and tone statistics, majority-versus-dissent
-lexical divergence via the weighted log-odds-ratio with an informative Dirichlet prior, topic models,
-per-justice writing-style embeddings, and citation-network influence and community structure. The
-system is built around an explicit \emph{ethics-first} design: every figure is emitted with a
-confidence score, a sample-size warning, and a limitations statement, and the software is constrained
-to report statistical disparities only---never claims of intent, ideology, or bias. We validate the
-language- and label-producing components against gold codings from the Supreme Court Database (SCDB):
-issue-area agreement of \FILL{accuracy/$\kappa$} and outcome agreement of \FILL{accuracy/$\kappa$} over
-\FILL{$N$} cases. All code, example data, dataset-versioning tooling, and continuous-integration
-configuration are publicly available to support reproduction and reuse.
+judicial opinions. Leviathan ingests opinions and metadata, segments U.S. Supreme Court opinions into
+majority, concurrence, and dissent components, and computes descriptive, lexical, embedding-, and
+graph-based measures: outcome and tone statistics, majority-versus-dissent lexical divergence via the
+weighted log-odds-ratio with an informative Dirichlet prior, topic models, per-justice writing-style
+embeddings, and citation-network influence and community structure. The system is built around an
+explicit \emph{ethics-first} design: every figure is emitted with a confidence score, a sample-size
+warning, and a limitations statement, and the software is constrained to report statistical
+disparities only---never claims of intent, ideology, or bias. We validate the label-producing
+components against gold codings from the Supreme Court Database (SCDB), obtaining issue-area agreement
+of \FILL{acc/$\kappa$} and outcome agreement of \FILL{acc/$\kappa$} over \FILL{$N$} cases. All code,
+example data, dataset-versioning tooling, and continuous-integration configuration are publicly
+available.
 \end{abstract}
 
-\section{Introduction and Statement of Need}
+\begin{keyword}
+legal NLP \sep judicial opinions \sep reproducibility \sep text-as-data \sep Supreme Court Database
+\sep research software
+\end{keyword}
+
+\end{frontmatter}
+
+% ----------------------------------------------------------------------------- %
+\section*{Required Metadata}
+\section*{Code metadata}
+
+\begin{table}[h!]
+\centering
+\small
+\begin{tabular}{|p{0.31\textwidth}|p{0.42\textwidth}|p{0.17\textwidth}|}
+\hline
+\textbf{Nr.} & \textbf{Code metadata description} & \textbf{Value} \\ \hline
+C1 & Current code version & v0.1.0 \\ \hline
+C2 & Permanent link to code/repository & \url{https://github.com/marcus-castillo/Leviathan} (archive: \FILL{Zenodo DOI}) \\ \hline
+C3 & Permanent link to Reproducible Capsule & \FILL{Code Ocean / none} \\ \hline
+C4 & Legal Code License & MIT \\ \hline
+C5 & Code versioning system used & git \\ \hline
+C6 & Software code languages, tools, services used & Python, TypeScript; FastAPI, Next.js; PostgreSQL/pgvector, Neo4j; scikit-learn, sentence-transformers, spaCy; Docker \\ \hline
+C7 & Compilation requirements, operating environments \& dependencies & Docker Compose; Python 3.11; Node 20; see \texttt{requirements.txt} \\ \hline
+C8 & Link to developer documentation/manual & Repository \texttt{README.md} files and \texttt{paper/REPRODUCE.md} \\ \hline
+C9 & Support email for questions & marcus.f.castillo@gmail.com \\ \hline
+\end{tabular}
+\caption{Code metadata.}
+\end{table}
+
+% ----------------------------------------------------------------------------- %
+\section{Motivation and significance}
 Empirical study of judicial behavior increasingly draws on natural language processing, yet much of
 this work relies on bespoke, unpublished pipelines whose preprocessing, labeling, and aggregation
 choices are difficult to inspect or reproduce. Two needs follow. First, the field needs
-\emph{shared, auditable infrastructure}: a documented pipeline from raw opinions to analysis-ready
-measures, with versioned datasets and tests. Second, because measures of ``judicial bias'' are
-ethically fraught and easily over-interpreted, the field needs tooling whose design makes
+\emph{shared, auditable infrastructure}: a documented path from raw opinions to analysis-ready
+measures, with versioned datasets and tests. Second, because measures framed around ``judicial bias''
+are ethically fraught and easily over-interpreted, the field needs tooling whose design makes
 over-claiming structurally difficult.
 
 Leviathan addresses both. It is a four-component system---(i) a bias-metrics API and dashboard,
 (ii) a dataset-standardization CLI with semantic versioning and reproducibility logs, (iii) a Neo4j
 citation-graph service with influence and community analysis, and (iv) a Supreme Court analysis
-platform---sharing a common embedding space and a common ethics layer. This paper describes the
-software, its methods, and a validation of its label-producing components against authoritative
-human codings.
+platform---sharing a common embedding space and a common ethics layer. Quantitative analysis of
+opinions spans political science and legal NLP: the Supreme Court Database \cite{spaeth2023scdb}
+supplies authoritative case-level codings and is the standard ground truth for SCOTUS work; ideal-point
+models such as Martin--Quinn scores \cite{martin2002dynamic} estimate ideological position from votes;
+distinctive-vocabulary analysis follows Monroe, Colaresi, and Quinn \cite{monroe2008fightin}; and legal
+text representation builds on sentence embeddings \cite{reimers2019sentencebert} and domain models
+\cite{chalkidis2020legalbert}, with outcome prediction studied since \cite{aletras2016predicting}.
+Leviathan's contribution is not a new algorithm but the integration, validation, and
+ethics-constrained packaging of these established methods into reusable research software.
 
-\paragraph{Scope and claims.} This is a \emph{software/resource} contribution. We do not claim to
-detect bias, intent, or ideology. We claim a reproducible pipeline whose component measures we
-validate against gold labels, and whose design enforces caveated, disparity-only reporting.
+\paragraph{Scope.} This is a software/resource contribution. We do not claim to detect bias, intent,
+or ideology; we claim a reproducible pipeline whose component measures are validated against gold
+labels and whose design enforces caveated, disparity-only reporting.
 
-\section{Related Work}
-Quantitative analysis of judicial opinions spans political science and legal NLP. The Supreme Court
-Database \cite{spaeth2023scdb} provides authoritative case-level codings (winning party, decision
-direction, issue area) and is the standard ground truth for SCOTUS empirical work; ideal-point models
-such as Martin--Quinn scores \cite{martin2002dynamic} estimate ideological position from votes. For
-distinctive-vocabulary analysis we adopt the weighted log-odds-ratio with an informative Dirichlet
-prior of Monroe, Colaresi, and Quinn \cite{monroe2008fightin}. Document and sentence representations
-build on sentence embeddings \cite{reimers2019sentencebert} and domain language models
-\cite{chalkidis2020legalbert}; legal-outcome prediction has been studied since at least
-\cite{aletras2016predicting}. We rely on established components---spaCy \cite{honnibal2020spacy},
-scikit-learn \cite{pedregosa2011scikit}, non-negative matrix factorization \cite{lee1999nmf}, and
-Louvain community detection \cite{blondel2008louvain}---and on open corpora from the Free Law Project
-(CourtListener) \cite{freelaw} and the Caselaw Access Project \cite{cap}. Our contribution is not a
-new algorithm but the integration, validation, and ethics-constrained packaging of these methods.
+% ----------------------------------------------------------------------------- %
+\section{Software description}
 
-\section{System Architecture}
+\subsection{Software architecture}
 Leviathan is a polyglot monorepo orchestrated with Docker Compose. A FastAPI backend exposes the
 bias-metrics API; a PostgreSQL instance with the \texttt{pgvector} extension stores opinions,
 analyses, and 384-dimensional sentence embeddings (\texttt{all-MiniLM-L6-v2}). The \texttt{levcorpus}
 CLI produces standardized JSONL/CSV/Parquet datasets with a semantic-version registry and
 reproducibility logs. A Neo4j service stores the citation graph; influence, clustering, and
-``statistical grouping'' analytics run on NetworkX projections so they are testable without a live
-database. The SCOTUS service adds opinion segmentation and per-justice analysis. Three Next.js
+label-neutral statistical-grouping analytics run on NetworkX projections so they are testable without
+a live database. The SCOTUS service adds opinion segmentation and per-justice analysis. Three Next.js
 dashboards and a static landing page provide visualization. Continuous integration runs all Python
 test suites, byte-compilation, and frontend type-checks.
 
-\section{Methods}
-\subsection{Opinion segmentation}
-SCOTUS opinions are split into majority, concurrence, dissent, and per-curiam segments by detecting
-authorship/role headers (e.g.\ ``\textsc{Justice} X delivered the opinion of the Court'';
-``\ldots, dissenting'') and attributing the authoring justice. The procedure is a transparent,
-auditable heuristic rather than a learned parser; we validate its outputs in
-Section~\ref{sec:validation}.
-
-\subsection{Lexical divergence}
-To surface vocabulary distinctive of one side of a decision, we compute the weighted log-odds-ratio
-with an informative Dirichlet prior \cite{monroe2008fightin}. For word $w$ with counts $y^{(i)}_w$ in
-corpus $i\in\{A,B\}$ and prior $\alpha_w$ derived from the combined corpus, the statistic is the
-$z$-score of the prior-shrunk log-odds difference; the prior down-weights rare-word noise that raw
-frequency and tf--idf do not. We apply this to majority-versus-dissent and to each justice versus
-their peers (``framing'').
-
-\subsection{Topic modeling and theme tagging}
-We fit non-negative matrix factorization \cite{lee1999nmf} over tf--idf representations to obtain
-interpretable topics, and additionally tag opinions with a curated constitutional-theme lexicon whose
-assignments trace to matched terms.
-
-\subsection{Justice style embeddings}
-A justice's style fingerprint is the mean of their authored-segment sentence embeddings
-\cite{reimers2019sentencebert}. We report pairwise cosine similarity and $k$-means style clusters with
-\emph{neutral} labels; these are explicitly not ideology scores.
-
-\subsection{Citation graph and influence}
-Opinions and their citations form a directed graph with typed edges (cites/follows/overrules/
-distinguishes). We compute PageRank, betweenness, and Louvain communities \cite{blondel2008louvain} on
-NetworkX projections, and a parameter-sensitive, label-neutral statistical grouping of judges.
-
-\section{Validation against the Supreme Court Database}
-\label{sec:validation}
-We validate the label-producing components against SCDB \cite{spaeth2023scdb} on the case-centered
-release. Opinions are joined to SCDB rows by normalized U.S.\ reporter citation. We report:
-
+\subsection{Software functionalities}
 \begin{itemize}
-  \item \textbf{Issue/theme agreement}: the top theme from our lexicon tagger versus SCDB
-        \texttt{issueArea}, scored over the subset of SCDB areas with a confident crosswalk (the
-        crosswalk is a documented modeling decision; ambiguous areas are excluded).
-  \item \textbf{Outcome agreement}: our outcome classifier mapped to the SCDB \texttt{partyWinning}
-        space (petitioner/respondent), over cases SCDB codes as having a clear winner.
+  \item \textbf{Ingestion} of CourtListener and plain-text opinions with metadata, plus idempotent
+        upsert and judge/court normalization.
+  \item \textbf{Opinion segmentation} into majority, concurrence, dissent, and per-curiam parts via
+        auditable authorship/role-header detection, with authoring-justice attribution.
+  \item \textbf{Lexical divergence}: the weighted log-odds-ratio with an informative Dirichlet prior
+        \cite{monroe2008fightin} for majority-versus-dissent and per-justice ``framing'' vocabulary;
+        the prior down-weights rare-word noise that raw frequency and tf--idf do not.
+  \item \textbf{Topic modeling} via non-negative matrix factorization \cite{lee1999nmf} over tf--idf,
+        plus a curated constitutional-theme lexicon whose tags trace to matched terms.
+  \item \textbf{Justice style embeddings}: mean-pooled sentence embeddings
+        \cite{reimers2019sentencebert} yielding pairwise similarity and $k$-means style clusters with
+        neutral (non-ideological) labels.
+  \item \textbf{Citation-graph analytics}: PageRank, betweenness, and Louvain communities
+        \cite{blondel2008louvain} over typed citation edges.
+  \item \textbf{Ethics layer}: every emitted signal carries a confidence score, a sample-size warning
+        below a configurable threshold, and a limitations string; narrative text is programmatically
+        scrubbed of intent/ideology vocabulary.
 \end{itemize}
 
-All numbers below are produced by \texttt{scripts/validate\_against\_scdb.py} and read from
-\texttt{paper/results/scdb\_validation.json}; they must not be edited by hand.
+% ----------------------------------------------------------------------------- %
+\section{Illustrative examples}
 
-\begin{table}[h]
+\subsection{Validation against the Supreme Court Database}
+\label{sec:validation}
+We validate the label-producing components against SCDB \cite{spaeth2023scdb} (case-centered release),
+joining opinions to SCDB rows by normalized U.S. reporter citation. \emph{Issue/theme agreement}
+compares the top theme from our lexicon tagger to SCDB \texttt{issueArea} over the subset of SCDB areas
+with a confident crosswalk (the crosswalk is a documented modeling decision; ambiguous areas are
+excluded). \emph{Outcome agreement} compares our outcome classifier, mapped to the SCDB
+\texttt{partyWinning} space, over cases SCDB codes with a clear winner. All values are produced by
+\texttt{scripts/validate\_against\_scdb.py} and read from \texttt{paper/results/scdb\_validation.json};
+they are not hand-edited.
+
+\begin{table}[h!]
 \centering
 \begin{tabular}{lrrrr}
 \toprule
@@ -141,40 +157,44 @@ Outcome vs.\ SCDB \texttt{partyWinning}  & \FILL{N} & \FILL{acc} & \FILL{F1} & \
 \bottomrule
 \end{tabular}
 \caption{Agreement of Leviathan component outputs with SCDB gold codings. Corpus:
-\FILL{corpus + term range + source}.}
+\FILL{corpus + term range + source}; SCDB release \FILL{version}.}
 \end{table}
 
-\paragraph{Segmentation.} We additionally report intrinsic segmentation statistics
-(\FILL{\% cases with $\geq 1$ detected opinion; segment-type distribution}) and, where the SCDB
-justice codebook is supplied, majority-author attribution accuracy (\FILL{accuracy}).
+\subsection{Worked case}
+\FILL{One real SCOTUS case: detected segments, top majority/dissent distinctive terms with $z$-scores,
+assigned theme, and nearest justices by style---copied verbatim from a pipeline run.}
 
-\section{Illustrative Example}
-\FILL{One worked SCOTUS case: segments detected, top majority/dissent distinctive terms, assigned
-theme, and nearest justices by style---copied from a real pipeline run.}
+% ----------------------------------------------------------------------------- %
+\section{Impact}
+Leviathan lowers the barrier to transparent, reproducible empirical work on judicial text. By
+packaging ingestion, segmentation, validated labeling, embeddings, and graph analytics behind a common
+API, dataset-versioning CLI, and tested codebase, it lets researchers reproduce and extend analyses
+rather than re-implement pipelines. The validation against authoritative SCDB codings (Section
+\ref{sec:validation}) gives users calibrated expectations for the noisy components, and the
+ethics layer encodes responsible-reporting norms directly in software---useful for teaching and for
+oversight-oriented research where over-claiming carries real cost. The dataset standardizer also
+produces analysis-ready corpora reusable beyond this system.
 
-\section{Ethics and Limitations}
-Leviathan is designed for hypothesis generation under expert review, not adjudication. The software
-enforces, in code, that every signal carries a confidence score, a sample-size warning below a
-configurable threshold, and a limitations string; narrative text is scrubbed of intent/ideology
-vocabulary. Key limitations: (i) outcome, tone, and theme labels are model-generated and noisy;
-(ii) corpus coverage is uneven across courts and eras, so absence of data is not absence of activity;
-(iii) ``similar'' cases by embedding need not be legally equivalent; (iv) statistical groupings are
-artifacts of the corpus, feature set, and parameters and are \emph{not} ideology measures---for
-ideology, validated external instruments such as Martin--Quinn \cite{martin2002dynamic} should be
-used; (v) nothing here supports causal claims about any judge.
+% ----------------------------------------------------------------------------- %
+\section{Limitations}
+Outcome, tone, and theme labels are model-generated and noisy; corpus coverage is uneven across courts
+and eras, so absence of data is not absence of activity; embedding ``similarity'' need not imply legal
+equivalence; statistical groupings are artifacts of the corpus, feature set, and parameters and are
+\emph{not} ideology measures---for ideology, validated external instruments such as Martin--Quinn
+\cite{martin2002dynamic} should be used; and nothing in the system supports causal claims about any
+judge. The bundled example corpora are synthetic and exist only for smoke-testing; reported results
+must come from real data.
 
-\section{Reproducibility and Availability}
-The repository (\url{https://github.com/marcus-castillo/Leviathan}) contains all source, example data,
-Docker configuration, and CI. Datasets are versioned via \texttt{levcorpus} with content hashes and
-reproducibility logs. \texttt{paper/REPRODUCE.md} maps every reported number to the exact command that
-regenerates it. Software environment: \FILL{commit hash, image digests, model versions}.
-
-\section{Conclusion}
+% ----------------------------------------------------------------------------- %
+\section{Conclusions}
 Leviathan packages established legal-NLP and graph methods into an auditable, reproducible, and
 ethically constrained pipeline, validated against authoritative human codings. We hope it lowers the
 barrier to transparent empirical work on judicial text while making over-claiming structurally hard.
 
-\bibliographystyle{plain}
+\section*{Acknowledgements}
+\FILL{funding / acknowledgements, and disclosure of AI-assisted development per venue policy.}
+
+\bibliographystyle{elsarticle-num}
 \bibliography{references}
 
 \end{document}
