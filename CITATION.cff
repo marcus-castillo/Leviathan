@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use Leviathan, please cite it using the metadata below."
+title: "Leviathan: An Open, Reproducible Pipeline for Statistical Text Analysis of Judicial Opinions"
+abstract: >-
+  An open-source, containerized pipeline for statistical text analysis of judicial opinions:
+  ingestion, Supreme Court opinion segmentation, majority-vs-dissent lexical divergence, topic
+  modeling, per-justice style embeddings, and citation-graph influence analysis, with an
+  ethics-first design that reports statistical disparities only (never intent, ideology, or bias).
+type: software
+authors:
+  - family-names: Castillo
+    given-names: Marcus
+    email: marcus.f.castillo@gmail.com
+    # orcid: "https://orcid.org/0000-0000-0000-0000"   # FILL before archiving
+version: "0.1.0"
+date-released: "2026-06-23"
+license: MIT
+repository-code: "https://github.com/marcus-castillo/Leviathan"
+keywords:
+  - legal NLP
+  - judicial opinions
+  - reproducibility
+  - text-as-data
+  - Supreme Court Database

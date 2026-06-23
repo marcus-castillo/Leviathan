@@ -1,0 +1,28 @@
+name: Paper
+
+# Builds the SoftwareX manuscript PDF. Scoped to paper changes so it never affects the code CI
+# status; the built PDF is uploaded as an artifact. (Unfilled [FILL] placeholders still compile.)
+on:
+  push:
+    paths: ["paper/**", ".github/workflows/paper.yml"]
+  pull_request:
+    paths: ["paper/**", ".github/workflows/paper.yml"]
+
+jobs:
+  build-pdf:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compile LaTeX (latexmk -> bibtex -> pdf)
+        uses: xu-cheng/latex-action@v3
+        with:
+          working_directory: paper
+          root_file: main.tex
+
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: leviathan-paper-pdf
+          path: paper/main.pdf
+          if-no-files-found: error
