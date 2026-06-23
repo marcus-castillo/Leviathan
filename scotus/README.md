@@ -54,3 +54,12 @@ docker compose exec scotus-api python -m scripts.build_justice_embeddings
 | `GET /justice/similarity` | pairwise justice style-similarity matrix + clusters |
 | `POST /similar-cases` | similar reasoning, flagged where it crosses statistical divides |
 | `GET /analysis/evolution` | topic mix and style drift over terms |
+
+## Validation against SCDB
+
+`scotusapp/validation/scdb.py` + `scripts/validate_against_scdb.py` validate the label-producing
+components against gold codings from the Supreme Court Database (issue area, winning party). Join is by
+normalized U.S. citation; metrics are accuracy / macro-F1 / Cohen's κ. This is the empirical backbone
+of the resource paper in [`../paper/`](../paper/README.md); see [`../paper/REPRODUCE.md`](../paper/REPRODUCE.md)
+for the exact protocol. The bundled `example_scotus.jsonl` is synthetic and for smoke-testing only —
+never for reported results.

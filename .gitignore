@@ -19,6 +19,16 @@ corpus/dataset/versions/
 corpus/dataset/registry.json
 corpus/dataset/CHANGELOG.md
 
+# Paper: track the scaffold + results dir, ignore generated artifacts and LaTeX build output
+paper/results/*
+!paper/results/.gitkeep
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.pdf
+
 # Env / secrets
 .env
 *.local

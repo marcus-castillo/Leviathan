@@ -42,6 +42,7 @@ CourtListener / text ──► ingestion ──► PostgreSQL ──► NLP pipe
 | `graph/` | **`graphapp`** — Neo4j citation graph + influence/cluster/temporal analysis (FastAPI) with a Cytoscape.js network explorer. Analytics run on NetworkX so they're testable without a live DB; see [graph/README.md](graph/README.md). |
 | `scotus/` | **`scotusapp`** — Supreme Court opinion NLP: segmentation (majority/concurrence/dissent), majority-vs-dissent lexical divergence (Fightin' Words), topic modeling, and per-justice style embeddings, with a dashboard. See [scotus/README.md](scotus/README.md). |
 | `landing/` | Unified landing page (nginx) linking both dashboards + all API docs. |
+| `paper/` | Software/resource manuscript (LaTeX) validated against the Supreme Court Database; see [paper/README.md](paper/README.md) and [paper/REPRODUCE.md](paper/REPRODUCE.md). Result numbers are placeholders filled only from real pipeline runs. |
 
 The `corpus` tool is a CLI, run on demand via the `tools` Docker profile:
 
