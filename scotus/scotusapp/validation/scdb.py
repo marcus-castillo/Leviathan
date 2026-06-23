@@ -90,6 +90,11 @@ def _to_int(value: str | None) -> int | None:
         return None
 
 
+def by_case_id(scdb: dict[str, SCDBRecord]) -> dict[str, SCDBRecord]:
+    """Re-index SCDB records by SCDB caseId, matching CourtListener's ``scdb_id`` for a direct join."""
+    return {r.case_id: r for r in scdb.values() if r.case_id}
+
+
 def load_scdb(path: str | Path) -> dict[str, SCDBRecord]:
     """Load the case-centered SCDB CSV into a dict keyed by normalized US citation.
 

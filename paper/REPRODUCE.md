@@ -17,16 +17,24 @@ python -c "import sentence_transformers, sklearn; print(sentence_transformers.__
 ## 1. Bring up the stack and ingest a real SCOTUS corpus
 
 The bundled `example_scotus.jsonl` is **synthetic** and is for smoke-testing only — it must NOT be
-used for reported results. Ingest real opinions (e.g. via the CourtListener SCOTUS endpoint or a
-local bulk download), then build embeddings:
+used for reported results.
+
+Download the CourtListener quarterly bulk CSVs (public domain) from the
+[bulk-data bucket](https://com-courtlistener-storage.s3-us-west-2.amazonaws.com/list.html?prefix=bulk-data/):
+`dockets`, `opinion-clusters`, `citations`, and `opinions`. Then:
 
 ```bash
 docker compose up --build db scotus-api
-# ... load a real corpus into scotus_case / scotus_segment (CourtListener loader or your own) ...
+docker compose exec scotus-api python -m scripts.load_courtlistener_bulk \
+    --dockets   /data/dockets.csv \
+    --clusters  /data/opinion-clusters.csv \
+    --citations /data/citations.csv \
+    --opinions  /data/opinions.csv          # filters to court=scotus, segments by opinion type
 docker compose exec scotus-api python -m scripts.build_justice_embeddings
 ```
 
-Report the corpus size, term range, and source in Table 1's caption.
+This stores each cluster's `scdb_id`, giving the validation step a **direct** join to SCDB (with
+citation fallback). Report the corpus size, term range, and the bulk-dump date in Table 1's caption.
 
 ## 2. Download SCDB gold labels
 
@@ -42,7 +50,9 @@ docker compose exec scotus-api \
   --out ../paper/results/scdb_validation.json
 ```
 
-This writes `paper/results/scdb_validation.json`. Copy its fields into the abstract and Table 1:
+Cases are joined to SCDB by `scdb_id` (from the CourtListener clusters) when available, falling back
+to normalized U.S. citation. This writes `paper/results/scdb_validation.json`. Copy its fields into
+the abstract and Table 1:
 
 | Paper marker | JSON field |
 |---|---|

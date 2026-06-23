@@ -55,6 +55,15 @@ docker compose exec scotus-api python -m scripts.build_justice_embeddings
 | `POST /similar-cases` | similar reasoning, flagged where it crosses statistical divides |
 | `GET /analysis/evolution` | topic mix and style drift over terms |
 
+## Real corpus: CourtListener bulk data
+
+`scotusapp/corpus/courtlistener_bulk.py` + `scripts/load_courtlistener_bulk.py` ingest a real SCOTUS
+corpus from CourtListener's quarterly public-domain CSV dumps (dockets/clusters/citations/opinions).
+Opinions are filtered to `court=scotus`, grouped by cluster, and segmented using CourtListener's own
+opinion `type` codes (lead/plurality → majority, concurrence, dissent, per curiam). Each cluster's
+`scdb_id` is stored, enabling a direct join to SCDB. The bulk-parsing helpers are dependency-free and
+unit-tested.
+
 ## Validation against SCDB
 
 `scotusapp/validation/scdb.py` + `scripts/validate_against_scdb.py` validate the label-producing

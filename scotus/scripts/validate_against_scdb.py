@@ -28,6 +28,7 @@ from scotusapp.db import Case, OpinionSegment, SessionLocal, init_db
 from scotusapp.validation.scdb import (
     SCDB_ISSUE_TO_THEME,
     align_labels,
+    by_case_id,
     classification_metrics,
     load_scdb,
     normalize_cite,
@@ -50,7 +51,16 @@ def main() -> None:
 
     init_db()
     scdb = load_scdb(args.scdb)
-    print(f"Loaded {len(scdb)} SCDB rows.")
+    scdb_by_id = by_case_id(scdb)
+    print(f"Loaded {len(scdb)} SCDB rows ({len(scdb_by_id)} with caseId).")
+
+    def resolve(case) -> object | None:
+        """Join a Case to its SCDB record: prefer the direct scdb_id, fall back to citation."""
+        scdb_id = (case.extra or {}).get("scdb_id")
+        if scdb_id and scdb_id in scdb_by_id:
+            return scdb_by_id[scdb_id]
+        cite = normalize_cite(case.citation)
+        return scdb.get(cite) if cite else None
 
     # Backend outcome classifier (rule-based fallback unless OUTCOME_MODEL_PATH is set).
     from app.nlp.outcome import OutcomeClassifier
@@ -63,31 +73,34 @@ def main() -> None:
     outcome_gold: dict[str, object] = {}
 
     db = SessionLocal()
+    n_matched = 0
     try:
         cases = db.execute(select(Case)).scalars().all()
         for case in cases:
-            cite = normalize_cite(case.citation)
-            if not cite or cite not in scdb:
+            gold = resolve(case)
+            if gold is None:
                 continue
-            gold = scdb[cite]
             text = _majority_text(case)
             if not text:
                 continue
+            key = gold.case_id or gold.us_cite  # unique per matched SCDB record
+            n_matched += 1
 
             # Theme: top predicted theme vs SCDB issueArea crosswalk.
             themes = tag_themes(text)
-            theme_pred[cite] = themes[0] if themes else None
-            theme_gold[cite] = (
+            theme_pred[key] = themes[0] if themes else None
+            theme_gold[key] = (
                 SCDB_ISSUE_TO_THEME.get(gold.issue_area) if gold.issue_area else None
             )
 
             # Outcome: classifier vs SCDB partyWinning.
-            outcome_pred[cite] = outcome_to_party_winning(clf.predict(text).label)
-            outcome_gold[cite] = (
+            outcome_pred[key] = outcome_to_party_winning(clf.predict(text).label)
+            outcome_gold[key] = (
                 gold.party_winning if gold.party_winning in (0, 1) else None
             )
     finally:
         db.close()
+    print(f"Matched {n_matched} ingested cases to SCDB.")
 
     yt_theme, yp_theme, unmatched_t = align_labels(theme_gold, theme_pred)
     yt_out, yp_out, unmatched_o = align_labels(outcome_gold, outcome_pred)

@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
-from scotusapp.corpus import ingest_records
+from scotusapp.corpus.loader import ingest_records
 from scotusapp.db import get_db
 from scotusapp.ethics import GLOBAL_DISCLAIMER
 from scotusapp.schemas import IngestResult

@@ -8,7 +8,7 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-from scotusapp.corpus import ingest_jsonl
+from scotusapp.corpus.loader import ingest_jsonl
 from scotusapp.db import SessionLocal, init_db
 
 DEFAULT = Path(__file__).resolve().parent.parent / "data" / "example_scotus.jsonl"
