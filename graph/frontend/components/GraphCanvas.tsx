@@ -12,12 +12,12 @@ const REL_COLOR: Record<string, string> = {
   DISTINGUISHES: "#777777",
   AUTHORED_BY: "#bbbbbb",
 };
-const REL_DASH: Record<string, number[]> = {
-  CITES: [1, 0],
-  FOLLOWS: [1, 0],
-  OVERRULES: [6, 3],
-  DISTINGUISHES: [2, 3],
-  AUTHORED_BY: [2, 3],
+const REL_LSTYLE: Record<string, string> = {
+  CITES: "solid",
+  FOLLOWS: "solid",
+  OVERRULES: "dashed",
+  DISTINGUISHES: "dotted",
+  AUTHORED_BY: "dotted",
 };
 
 /**
@@ -66,7 +66,7 @@ export function GraphCanvas({
           target: e.target,
           rel: e.rel,
           color: REL_COLOR[e.rel] ?? "#999999",
-          dash: REL_DASH[e.rel] ?? [1, 0],
+          lstyle: REL_LSTYLE[e.rel] ?? "solid",
           onpath: pathEdges.has(`${e.source}->${e.target}`) ? 1 : 0,
         },
       })),
@@ -76,14 +76,16 @@ export function GraphCanvas({
       container: ref.current,
       elements,
       wheelSensitivity: 0.2,
+      // Styling uses selectors + data() string-mappers only (no function mappers / ambiguous
+      // layout options), so it type-checks cleanly against @types/cytoscape.
       style: [
         {
           selector: "node",
           style: {
             width: "data(size)",
             height: "data(size)",
-            "background-color": (ele) => (ele.data("type") === "Judge" ? "#dddddd" : "#ffffff"),
-            "border-width": (ele) => (ele.data("onpath") ? 3 : 1),
+            "background-color": "#ffffff",
+            "border-width": 1,
             "border-color": "#000000",
             label: "data(label)",
             color: "#000000",
@@ -95,21 +97,24 @@ export function GraphCanvas({
             "text-margin-y": 3,
           },
         },
+        { selector: 'node[type = "Judge"]', style: { "background-color": "#dddddd" } },
+        { selector: "node[onpath = 1]", style: { "border-width": 3 } },
         {
           selector: "edge",
           style: {
-            width: (ele) => (ele.data("onpath") ? 3 : 1.2),
+            width: 1.2,
             "line-color": "data(color)",
-            "line-style": (ele) => (ele.data("dash")[1] ? "dashed" : "solid"),
-            "line-dash-pattern": (ele) => ele.data("dash"),
             "target-arrow-color": "data(color)",
             "target-arrow-shape": "triangle",
             "curve-style": "bezier",
-            opacity: (ele) => (ele.data("onpath") ? 1 : 0.7),
+            opacity: 0.7,
           },
         },
+        { selector: 'edge[lstyle = "dashed"]', style: { "line-style": "dashed" } },
+        { selector: 'edge[lstyle = "dotted"]', style: { "line-style": "dotted" } },
+        { selector: "edge[onpath = 1]", style: { width: 3, opacity: 1 } },
       ],
-      layout: { name: "cose", animate: false, padding: 30, nodeRepulsion: () => 12000 },
+      layout: { name: "cose", animate: false, padding: 30 },
     });
 
     cy.on("tap", "node", (evt) => {

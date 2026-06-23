@@ -38,7 +38,7 @@ export default function NetworkPage() {
           ))}
         </select>
         {focus && (
-          <button onClick={() => setFocus(null)}>← back to full network</button>
+          <button onClick={() => setFocus(null)}>Back to full network</button>
         )}
         <span className="small muted" style={{ marginLeft: "auto" }}>
           {focus ? `Ego network: ${focusName}` : "Click any node to focus its ego network"}
