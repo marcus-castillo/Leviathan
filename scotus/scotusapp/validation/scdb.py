@@ -64,6 +64,8 @@ class SCDBRecord:
     decision_direction: int | None
     issue_area: int | None
     maj_opin_writer: str | None
+    sct_cite: str | None = None
+    led_cite: str | None = None
 
 
 # --------------------------------------------------------------------------- #
@@ -117,8 +119,26 @@ def load_scdb(path: str | Path) -> dict[str, SCDBRecord]:
                 decision_direction=_to_int(row.get("decisionDirection")),
                 issue_area=_to_int(row.get("issueArea")),
                 maj_opin_writer=(row.get("majOpinWriter") or None),
+                sct_cite=(row.get("sctCite") or "").strip() or None,
+                led_cite=(row.get("ledCite") or "").strip() or None,
             )
     return records
+
+
+def citation_index(scdb: dict[str, SCDBRecord]) -> dict[str, SCDBRecord]:
+    """Index SCDB records by every available citation (U.S., S. Ct., L. Ed.), normalized.
+
+    CourtListener often lists only the S. Ct. citation for recent terms, so joining on U.S. Reports
+    alone misses many cases; this widens the join. Cert denials/orders remain excluded because they
+    are not in SCDB at all.
+    """
+    idx: dict[str, SCDBRecord] = {}
+    for rec in scdb.values():
+        for cite in (rec.us_cite, rec.sct_cite, rec.led_cite):
+            n = normalize_cite(cite)
+            if n:
+                idx.setdefault(n, rec)
+    return idx
 
 
 # --------------------------------------------------------------------------- #
